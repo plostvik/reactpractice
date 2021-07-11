@@ -2,15 +2,15 @@
   "customer": "BigCo",
   "performances": [
     {
-      "playlD": "hamlet",
+      "playID": "hamlet",
       "audience": 55
     },
     {
-      "playlD": "as-like",
+      "playID": "as-like",
       "audience": 35
     },
     {
-      "playlD": "othello",
+      "playID": "othello",
       "audience": 40
     }
   ]
