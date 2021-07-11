@@ -3,7 +3,7 @@ export default function createStatementData(invoice, plays) {
   statementData.customer = invoice.customer;
   statementData.performances = invoice.performances.map(enrichPerfomance);
   statementData.totalAmount = totalAmount(statementData);
-  statementData.totalvolumeCredits = totalvolumeCredits(statementData);
+  statementData.totalvolumeCredits = totalVolumeCredits(statementData);
   return statementData;
 
   function enrichPerfomance(aPerfomance) {
@@ -49,7 +49,7 @@ export default function createStatementData(invoice, plays) {
     return result;
   }
 
-  function totalvolumeCredits(data) {
+  function totalVolumeCredits(data) {
     return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
   }
 
