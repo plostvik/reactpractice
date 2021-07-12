@@ -7,12 +7,23 @@ export default function createStatementData(invoice, plays) {
   return result;
 
   function enrichPerfomance(aPerfomance) {
-    const calculator = new PerfomanceCalculator(aPerfomance, playFor(aPerfomance));
+    const calculator = createPerfomanceCalculator(aPerfomance, playFor(aPerfomance));
     const result = Object.assign({}, aPerfomance);
     result.play = calculator.play;
     result.amount = calculator.amount;
     result.volumeCredits = calculator.volumeCredits;
     return result;
+  }
+
+  function createPerfomanceCalculator(aPerfomance, aPlay) {
+    switch (aPlay.type) {
+      case 'tragedy':
+        return new TragedyCalculator(aPerfomance, aPlay);
+      case 'comedy':
+        return new ComedyCalculator(aPerfomance, aPlay);
+      default:
+        throw new Error(`unknown type: ${aPlay.type}`);
+    }
   }
 
   function playFor(aPerfomance) {
@@ -35,33 +46,34 @@ class PerfomanceCalculator {
   }
 
   get amount() {
-    let result = 0;
-    switch (this.play.type) {
-      case 'tragedy':
-        result = 40000;
-        if (this.perfomance.audience > 30) {
-          result += 1000 * (this.perfomance.audience - 30);
-        }
-        break;
-      case 'comedy':
-        result = 30000;
-        if (this.perfomance.audience > 20) {
-          result += 10000 + 500 * (this.perfomance.audience - 20);
-        }
-        result += 300 * this.perfomance.audience;
-        break;
-      default:
-        throw new Error(`unknown type: ${this.play.type}`);
+    throw new Error(`unknown type: ${this.play.type}`);
+  }
+
+  get volumeCredits() {
+    return Math.max(this.perfomance.audience - 30, 0);
+  }
+}
+
+class TragedyCalculator extends PerfomanceCalculator {
+  get amount() {
+    let result = 40000;
+    if (this.perfomance.audience > 30) {
+      result += 1000 * (this.perfomance.audience - 30);
     }
+    return result;
+  }
+}
+class ComedyCalculator extends PerfomanceCalculator {
+  get amount() {
+    let result = 30000;
+    if (this.perfomance.audience > 20) {
+      result += 10000 + 500 * (this.perfomance.audience - 20);
+    }
+    result += 300 * this.perfomance.audience;
     return result;
   }
 
   get volumeCredits() {
-    let result = 0;
-    result += Math.max(this.perfomance.audience - 30, 0);
-    if ('comedy' === this.play.type) {
-      result += Math.floor(this.perfomance.audience / 5);
-    }
-    return result;
+    return super.volumeCredits + Math.floor(this.perfomance.audience / 5);
   }
 }
